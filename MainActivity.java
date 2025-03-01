@@ -1,24 +1,42 @@
 package edu.niu.android.hangman;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import android.view.View;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+{
+    private Hangman game;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+        if (game == null)
+            game = new Hangman(Hangman.DEFAULT_GUESSES);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        TextView status = (TextView) findViewById(R.id.status);
+        status.setText("" + game.getGuessesLeft());
+
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager.findFragmentById(R.id.game_state) == null)
+        {
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            GameStateFragment fragment = new GameStateFragment();
+            transaction.add(R.id.game_state, fragment);
+            transaction.commit();
+        }
+    }
+
+    public Hangman getGame()
+    {
+        return game;
+    }
+
+    public void play(View view)
+    {
     }
 }
